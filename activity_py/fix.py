@@ -80,9 +80,7 @@ def simplify_polyline(points, max_distance):
             tmp_max_distance_position = point_no
 
     # Now that we have the most distance point, compute its real distance:
-    real_max_distance = distance_from_line(
-        points[tmp_max_distance_position], begin, end
-    )
+    real_max_distance = distance_from_line(points[tmp_max_distance_position], begin, end)
 
     # If furthest point is less than max_distance, remove all points between begin and end
     if real_max_distance is not None and real_max_distance < _max_distance:

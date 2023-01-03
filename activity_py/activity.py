@@ -10,6 +10,7 @@ from fitparse import FitFile
 from activity_py.fix import get_elevation_for_lat_lon, simplify_polyline
 from activity_py.utils import semicircle_to_degrees, etree_to_dict_no_namespaces, haversine
 
+
 def utc_offset(offset):
     return timezone(timedelta(seconds=offset))
 
@@ -49,20 +50,10 @@ class Activity:
 
         args["duration"] = (points[-1]["timestamp"] - points[0]["timestamp"]).seconds
 
-        args["longitude_values"] = [
-            semicircle_to_degrees(p["position_long"])
-            for p in points
-            if "position_long" in p
-        ]
-        args["latitude_values"] = [
-            semicircle_to_degrees(p["position_lat"])
-            for p in points
-            if "position_lat" in p
-        ]
+        args["longitude_values"] = [semicircle_to_degrees(p["position_long"]) for p in points if "position_long" in p]
+        args["latitude_values"] = [semicircle_to_degrees(p["position_lat"]) for p in points if "position_lat" in p]
         args["elevation_values"] = [p.get("enhanced_altitude") for p in points]
-        args["clock_values"] = [
-            (p["timestamp"] - points[0]["timestamp"]).seconds for p in points
-        ]
+        args["clock_values"] = [(p["timestamp"] - points[0]["timestamp"]).seconds for p in points]
         args["heart_rate_values"] = [p.get("heart_rate", 0) for p in points]
         args["distance_values"] = []
         args["laps"] = laps
@@ -134,14 +125,10 @@ class Activity:
         args["longitude_values"] = [float(x["@lon"]) for x in points]
         args["latitude_values"] = [float(x["@lat"]) for x in points]
         args["elevation_values"] = [float(x["ele"]) for x in points]
-        args["clock_values"] = [
-            (parse(v["time"]) - args["start"]).seconds for v in points
-        ]
+        args["clock_values"] = [(parse(v["time"]) - args["start"]).seconds for v in points]
 
         try:
-            args["heart_rate_values"] = [
-                x["extensions"]["TrackPointExtension"].get("hr", 0.0) for x in points
-            ]
+            args["heart_rate_values"] = [x["extensions"]["TrackPointExtension"].get("hr", 0.0) for x in points]
         except KeyError:
             print("No HR data, skipping")
 
@@ -245,9 +232,7 @@ class Activity:
         )
 
     def fix_elevation(self):
-        for i, (lat, lon, ele) in enumerate(
-            zip(self.latitude_values, self.longitude_values, self.elevation_values)
-        ):
+        for i, (lat, lon, ele) in enumerate(zip(self.latitude_values, self.longitude_values, self.elevation_values)):
             self.elevation_values[i] = get_elevation_for_lat_lon(lat, lon, ele)
 
     def simplify(self, distance=0.02):
@@ -359,10 +344,7 @@ class Activity:
 
         for i, distance in enumerate(self.distance_values):
             if distance >= next_split:
-                splits.append(
-                    (self.clock_values[i] - split_start)
-                    * (float(next_split) / distance)
-                )
+                splits.append((self.clock_values[i] - split_start) * (float(next_split) / distance))
                 split_start = self.clock_values[i]
                 next_split += split
 
@@ -406,11 +388,7 @@ class Activity:
             if 0 < n < size - 1:
                 previous_ele = elevations[n - 1]
                 next_ele = elevations[n + 1]
-                if (
-                    previous_ele is not None
-                    and current_ele is not None
-                    and next_ele is not None
-                ):
+                if previous_ele is not None and current_ele is not None and next_ele is not None:
                     return previous_ele * 0.3 + current_ele * 0.4 + next_ele * 0.3
             return current_ele
 
