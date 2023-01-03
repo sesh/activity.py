@@ -1,16 +1,17 @@
 import decimal
 import json
-from datetime import datetime, timedelta, timezone
-from math import asin, cos, floor, radians, sin, sqrt
+from datetime import timedelta, timezone
+from math import floor
 
 from dateutil.parser import parse
 from defusedxml import ElementTree
 from fitparse import FitFile
 
 from activity_py.fix import get_elevation_for_lat_lon, simplify_polyline
-from activity_py.utils import *
+from activity_py.utils import semicircle_to_degrees, etree_to_dict_no_namespaces, haversine
 
-utc_offset = lambda offset: timezone(timedelta(seconds=offset))
+def utc_offset(offset):
+    return timezone(timedelta(seconds=offset))
 
 
 # Feature Toggles
@@ -67,6 +68,7 @@ class Activity:
         args["laps"] = laps
 
         d = 0.0
+        prev_pt = None
 
         for pt in zip(args["latitude_values"], args["longitude_values"]):
             if len(args["distance_values"]) == 0:
@@ -109,7 +111,7 @@ class Activity:
         args = {}
         try:
             args["name"] = d["gpx"]["trk"]["name"]
-        except:
+        except KeyError:
             args["name"] = "Unnamed Run"
 
         points = []
@@ -140,7 +142,7 @@ class Activity:
             args["heart_rate_values"] = [
                 x["extensions"]["TrackPointExtension"].get("hr", 0.0) for x in points
             ]
-        except:
+        except KeyError:
             print("No HR data, skipping")
 
         args["distance_values"] = []
@@ -237,7 +239,7 @@ class Activity:
                 "uphill": self.uphill,
                 "downhill": self.downhill,
                 "splits": self._splits,
-                "laps": [str(l) for l in self.laps],
+                "laps": [str(lap) for lap in self.laps],
             },
             indent=2,
         )
@@ -260,7 +262,7 @@ class Activity:
             )
             for i in range(len(self.latitude_values))
         ]
-        x = len(points)
+
         points = simplify_polyline(points, distance)
 
         self.latitude_values = [x[0] for x in points]
@@ -330,7 +332,7 @@ class Activity:
         hr = [int(x) for x in self.heart_rate_values if x]
         try:
             return floor(sum(hr) / len(hr))
-        except:
+        except (ZeroDivisionError, ValueError):
             return 0
 
     def max_hr(self):
@@ -338,7 +340,7 @@ class Activity:
 
         try:
             return max(hr)
-        except:
+        except ValueError:
             return 0
 
     def calculated_distance(self):

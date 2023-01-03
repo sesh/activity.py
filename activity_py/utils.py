@@ -1,15 +1,6 @@
-import decimal
-import json
-import json as json_lib
-import ssl
-from collections import defaultdict, namedtuple
-from datetime import datetime, timedelta
+from collections import defaultdict
 from math import asin, cos, radians, sin, sqrt
-from urllib.parse import urlencode
-from urllib.request import Request, urlopen
 
-from dateutil.parser import parse
-from defusedxml import ElementTree
 
 AVG_EARTH_RADIUS = 6371  # in km
 
