@@ -1,7 +1,8 @@
-from setuptools import setup
 import os
 
-VERSION = "0.1"
+from setuptools import setup
+
+VERSION = "0.1-beta.1"
 
 
 def get_long_description():
@@ -26,8 +27,8 @@ setup(
     },
     license="Apache License, Version 2.0",
     version=VERSION,
-    packages=["activity.py"],
-    install_requires=[],
+    packages=["activity_py"],
+    install_requires=["fitparse==1.2.0", "python-dateutil<2.9", "defusedxml==0.7.1"],
     extras_require={"test": ["pytest"]},
     python_requires=">=3.7",
 )
