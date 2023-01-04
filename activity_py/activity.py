@@ -8,7 +8,7 @@ from defusedxml import ElementTree
 from fitparse import FitFile
 
 from activity_py.fix import get_elevation_for_lat_lon, simplify_polyline
-from activity_py.utils import semicircle_to_degrees, etree_to_dict_no_namespaces, haversine
+from activity_py.utils import etree_to_dict_no_namespaces, haversine, semicircle_to_degrees
 
 
 def utc_offset(offset):
@@ -17,7 +17,7 @@ def utc_offset(offset):
 
 # Feature Toggles
 SIMPLIFY = True
-FIX_ELEVATION = True
+FIX_ELEVATION = False
 GENERATE_NAME = False
 FASTEST_X = []
 
