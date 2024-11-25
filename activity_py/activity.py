@@ -107,7 +107,7 @@ class Activity:
 
         points = []
 
-        if type(d["gpx"]["trk"]["trkseg"]) == list:
+        if type(d["gpx"]["trk"]["trkseg"]) is list:
             for seg in d["gpx"]["trk"]["trkseg"]:
                 if seg and "trkpt" in seg:
                     for pt in seg["trkpt"]:
