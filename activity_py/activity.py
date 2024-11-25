@@ -374,7 +374,7 @@ class Activity:
 
     def calculate_uphill_downhill(self):
         # source: https://github.com/tkrajina/gpxpy/blob/dev/gpxpy/geo.py
-        elevations = [int(m / 10) for m in self.elevation_values]
+        elevations = [int(m / 10) for m in self.elevation_values if m]
 
         if not elevations:
             return 0, 0
